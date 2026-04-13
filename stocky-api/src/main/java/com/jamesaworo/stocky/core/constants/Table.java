@@ -66,6 +66,7 @@ public class Table {
     public static final String STOCK_ITEM = STOCK + "_ITEMS";
     public static final String STOCK_ITEM_EXPENSES = STOCK + "_ITEM_EXPENSES";
     public static final String STOCK_PRICE = STOCK + "_PRICE";
+    public static final String STOCK_TRANSACTION_LOG = STOCK + "_TRANSACTION_LOG";
 
     // SALE TABLES
     public static final String SALES = PREFIX + "SALES";
