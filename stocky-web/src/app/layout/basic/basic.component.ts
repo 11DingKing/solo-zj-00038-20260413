@@ -7,7 +7,22 @@ import {Observable} from 'rxjs';
 
 @Component({
     selector: 'layout-basic',
-    templateUrl: 'basic.component.html'
+    templateUrl: 'basic.component.html',
+    styles: [`
+        .low-stock-alert-badge {
+            cursor: pointer;
+            padding: 0 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s;
+        }
+
+        .low-stock-alert-badge:hover {
+            background-color: rgba(0, 0, 0, 0.04);
+            border-radius: 4px;
+        }
+    `]
 })
 export class LayoutBasicComponent implements OnInit, OnDestroy {
     options: LayoutDefaultOptions = {
