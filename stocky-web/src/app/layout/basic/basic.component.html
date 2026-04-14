@@ -35,9 +35,13 @@
             nz-tooltip
             nzTooltipTitle="Low Stock Alert"
         >
-            <nz-badge [nzCount]="lowStockCount$ | async" [nzShowZero]="false" nzOverflowCount="99">
-                <i nz-icon nzType="warning" style="font-size: 18px; color: #faad14;"></i>
-            </nz-badge>
+            <ng-container *ngIf="(lowStockCount$ | async) as count">
+                <nz-badge *ngIf="count > 0" [nzCount]="count" [nzOverflowCount]="99">
+                    <i nz-icon nzType="warning" style="font-size: 18px; color: #faad14;"></i>
+                </nz-badge>
+                <i *ngIf="count <= 0" nz-icon nzType="warning" style="font-size: 18px; color: #faad14;"></i>
+            </ng-container>
+            <i *ngIf="!(lowStockCount$ | async)" nz-icon nzType="warning" style="font-size: 18px; color: #faad14;"></i>
         </div>
     </layout-default-header-item>
 

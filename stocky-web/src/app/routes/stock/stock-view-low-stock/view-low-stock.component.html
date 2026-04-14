@@ -37,83 +37,89 @@
         </button>
     </div>
 
-    <nz-table
-        #basicTable
-        [nzData]="tableData$ | async"
-        [nzLoading]="isLoading"
-        [nzShowPagination]="false"
-        nzSize="middle"
-    >
-        <thead>
-            <tr>
-                <th nzWidth="50px">
-                    <label
-                        nz-checkbox
-                        [(ngModel)]="allChecked"
-                        [nzIndeterminate]="indeterminate"
-                        (ngModelChange)="onAllChecked($event)"
-                    ></label>
-                </th>
-                <th>Product</th>
-                <th>Brand</th>
-                <th>Category</th>
-                <th>SKU</th>
-                <th>Current Qty</th>
-                <th>Low Stock Point</th>
-                <th>Shortage</th>
-                <th>Replenish Qty</th>
-                <th nzWidth="120px">Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr *ngFor="let item of basicTable.data" [ngClass]="getRowClass(item)">
-                <td>
-                    <label
-                        nz-checkbox
-                        [(ngModel)]="item.selected"
-                        (ngModelChange)="onItemChecked(item, $event)"
-                    ></label>
-                </td>
-                <td>
-                    <strong>{{ item.productName }}</strong>
-                </td>
-                <td>{{ item.brandName || '-' }}</td>
-                <td>{{ item.categoryName || '-' }}</td>
-                <td>{{ item.sku || '-' }}</td>
-                <td>
-                    <nz-tag [nzColor]="item.currentQuantity === 0 ? 'red' : 'orange'">
-                        {{ item.currentQuantity }}
-                    </nz-tag>
-                </td>
-                <td>{{ item.lowStockPoint }}</td>
-                <td>
-                    <span class="shortage-badge" *ngIf="item.shortageQuantity && item.shortageQuantity > 0">
-                        -{{ item.shortageQuantity }}
-                    </span>
-                    <span *ngIf="!item.shortageQuantity || item.shortageQuantity <= 0">0</span>
-                </td>
-                <td>
-                    <nz-input-number
-                        class="replenish-input"
-                        [(ngModel)]="item.replenishQuantity"
-                        [nzMin]="1"
-                        [nzMax]="99999"
-                        [nzStep]="1"
-                    ></nz-input-number>
-                </td>
-                <td>
-                    <button
-                        nz-button
-                        nzSize="small"
-                        nzType="primary"
-                        (click)="onSingleReplenish(item)"
-                        [nzLoading]="isLoading"
-                    >
-                        <i nz-icon nzType="plus"></i>
-                        Replenish
-                    </button>
-                </td>
-            </tr>
-        </tbody>
-    </nz-table>
+    <ng-container *ngIf="tableData$ | async as tableData">
+        <nz-table
+            #basicTable
+            [nzData]="tableData"
+            [nzLoading]="isLoading"
+            [nzShowPagination]="false"
+            nzSize="middle"
+        >
+            <thead>
+                <tr>
+                    <th nzWidth="50px">
+                        <label
+                            nz-checkbox
+                            [(ngModel)]="allChecked"
+                            [nzIndeterminate]="indeterminate"
+                            (ngModelChange)="onAllChecked($event)"
+                        ></label>
+                    </th>
+                    <th>Product</th>
+                    <th>Brand</th>
+                    <th>Category</th>
+                    <th>SKU</th>
+                    <th>Current Qty</th>
+                    <th>Low Stock Point</th>
+                    <th>Shortage</th>
+                    <th>Replenish Qty</th>
+                    <th nzWidth="120px">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let item of basicTable.data" [ngClass]="getRowClass(item)">
+                    <td>
+                        <label
+                            nz-checkbox
+                            [(ngModel)]="item.selected"
+                            (ngModelChange)="onItemChecked(item, $event)"
+                        ></label>
+                    </td>
+                    <td>
+                        <strong>{{ item.productName }}</strong>
+                    </td>
+                    <td>{{ item.brandName || '-' }}</td>
+                    <td>{{ item.categoryName || '-' }}</td>
+                    <td>{{ item.sku || '-' }}</td>
+                    <td>
+                        <span
+                            class="qty-badge"
+                            [class.qty-critical]="item.currentQuantity === 0"
+                            [class.qty-warning]="item.currentQuantity !== 0"
+                        >
+                            {{ item.currentQuantity }}
+                        </span>
+                    </td>
+                    <td>{{ item.lowStockPoint }}</td>
+                    <td>
+                        <span class="shortage-badge" *ngIf="item.shortageQuantity && item.shortageQuantity > 0">
+                            -{{ item.shortageQuantity }}
+                        </span>
+                        <span *ngIf="!item.shortageQuantity || item.shortageQuantity <= 0">0</span>
+                    </td>
+                    <td>
+                        <nz-input-number
+                            class="replenish-input"
+                            [(ngModel)]="item.replenishQuantity"
+                            [nzMin]="1"
+                            [nzMax]="99999"
+                            [nzStep]="1"
+                        ></nz-input-number>
+                    </td>
+                    <td>
+                        <button
+                            nz-button
+                            nzSize="small"
+                            nzType="primary"
+                            (click)="onSingleReplenish(item)"
+                            [nzLoading]="isLoading"
+                        >
+                            <i nz-icon nzType="plus"></i>
+                            Replenish
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </nz-table>
+    </ng-container>
 </nz-card>

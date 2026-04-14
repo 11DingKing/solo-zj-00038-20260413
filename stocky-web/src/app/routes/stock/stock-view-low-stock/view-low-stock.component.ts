@@ -1,7 +1,7 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {NzModalService} from 'ng-zorro-antd/modal';
 import {NzNotificationService} from 'ng-zorro-antd/notification';
-import {Observable, of, Subject} from 'rxjs';
+import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 import {STOCK_VIEW_LOW_PRODUCT} from '../../../data/constant/crumb.constant';
 import {UtilService} from '../../../shared/utils/util.service';
@@ -28,15 +28,42 @@ import {LowStockAlertUsecase} from '../_usecase/low-stock-alert.usecase';
         .replenish-input {
             width: 100px;
         }
+        .qty-badge {
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .qty-critical {
+            background-color: #fff1f0;
+            color: #ff4d4f;
+            border: 1px solid #ffa39e;
+        }
+        .qty-warning {
+            background-color: #fffbe6;
+            color: #faad14;
+            border: 1px solid #ffe58f;
+        }
+        .toolbar {
+            margin-bottom: 16px;
+            padding: 12px 16px;
+            background-color: #f6ffed;
+            border: 1px solid #b7eb8f;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
     `]
 })
 export class ViewLowStockComponent implements OnInit, OnDestroy {
     private destroy$ = new Subject<void>();
+    private tableDataSubject = new BehaviorSubject<LowStockAlertPayload[]>([]);
 
     public crumbs = STOCK_VIEW_LOW_PRODUCT;
     public isOpenHeader = true;
     public isLoading = false;
-    public tableData$: Observable<LowStockAlertPayload[]> = of([]);
+    public tableData$: Observable<LowStockAlertPayload[]> = this.tableDataSubject.asObservable();
     public selectedItems: LowStockAlertPayload[] = [];
     public allChecked = false;
     public indeterminate = false;
@@ -67,7 +94,7 @@ export class ViewLowStockComponent implements OnInit, OnDestroy {
                         item.selected = false;
                         item.replenishQuantity = item.shortageQuantity ? Math.max(item.shortageQuantity, 1) : 1;
                     });
-                    this.tableData$ = of(data);
+                    this.tableDataSubject.next(data);
                     this.selectedItems = [];
                     this.updateCheckedStatus();
                     this.isLoading = false;
@@ -89,20 +116,18 @@ export class ViewLowStockComponent implements OnInit, OnDestroy {
     }
 
     public onAllChecked(checked: boolean): void {
-        this.tableData$.subscribe(data => {
-            data.forEach(item => item.selected = checked);
-            this.tableData$ = of([...data]);
-            this.updateCheckedStatus();
-        });
+        const currentData = this.tableDataSubject.value;
+        currentData.forEach(item => item.selected = checked);
+        this.tableDataSubject.next([...currentData]);
+        this.updateCheckedStatus();
     }
 
     private updateCheckedStatus(): void {
-        this.tableData$.subscribe(data => {
-            const checkedItems = data.filter(item => item.selected);
-            this.selectedItems = checkedItems;
-            this.allChecked = data.length > 0 && checkedItems.length === data.length;
-            this.indeterminate = checkedItems.length > 0 && checkedItems.length < data.length;
-        });
+        const currentData = this.tableDataSubject.value;
+        const checkedItems = currentData.filter(item => item.selected);
+        this.selectedItems = checkedItems;
+        this.allChecked = currentData.length > 0 && checkedItems.length === currentData.length;
+        this.indeterminate = checkedItems.length > 0 && checkedItems.length < currentData.length;
     }
 
     public getSelectedCount(): number {
