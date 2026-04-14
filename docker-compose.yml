@@ -1,0 +1,14 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: stocky-api/Dockerfile
+    ports:
+      - "8080:8080"
+
+  frontend:
+    build: ./stocky-web
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
