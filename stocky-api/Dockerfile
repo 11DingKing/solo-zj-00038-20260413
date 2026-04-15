@@ -3,6 +3,7 @@ WORKDIR /app
 COPY pom.xml .
 COPY stocky-api/pom.xml ./stocky-api/pom.xml
 COPY stocky-web/pom.xml ./stocky-web/pom.xml
+RUN mkdir -p /root/.m2 && echo '<settings><mirrors><mirror><id>aliyun</id><mirrorOf>central</mirrorOf><name>Aliyun Maven</name><url>https://maven.aliyun.com/repository/public</url></mirror></mirrors></settings>' > /root/.m2/settings.xml
 RUN mvn dependency:go-offline -pl stocky-api
 COPY stocky-api/src ./stocky-api/src
 RUN mvn package -DskipTests -pl stocky-api
